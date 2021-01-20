@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#define SRC_FILE_PATH "4x4.bmp"
+#define SRC_FILE_PATH "10x10.bmp"
 #define DEST_FILE_PATH "result.bmp"
 #define RESULT_TXT "result.txt"
 #define TEXT_FILE_PATH "f.txt"
@@ -73,11 +73,13 @@ void main()
 
 		fseek(picFile, -54, SEEK_END);
 		int picSize = ftell(picFile);
-
 		int pic2Size = picSize * 8;
 
 		in10 = (int*)malloc(picSize * sizeof(int));
 		in2 = (unsigned char*)malloc(pic2Size * sizeof(char));
+		out10 = (int*)malloc(picSize * sizeof(int));
+		for (int i = 0; i < pic2Size; i++) in2[i] = 0;
+		for (int i = 0; i < picSize; i++) out10[i] = 0;
 
 		//Создать копию файла - изображения
 		FILE* destFile = fopen(DEST_FILE_PATH, "wb+");
@@ -88,6 +90,16 @@ void main()
 		fseek(picFile, 0L, SEEK_SET);
 		fseek(destFile, 0L, SEEK_SET);
 		copyFile(picFile, destFile);
+
+		dec2bin_array(in10, in2, picSize, pic2Size);
+
+
+
+		bin2dec_array(out10, in2, picSize, pic2Size);
+		for (int i = 0; i < picSize; i++) 
+		{
+			printf("%d    %d\n", in10[i], out10[i]);
+		}
 	}
 	else
 	{
