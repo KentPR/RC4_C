@@ -20,7 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="f.txt">
+    <Text Include="tin.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="key.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>
