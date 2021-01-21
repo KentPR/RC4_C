@@ -46,6 +46,22 @@ void RC4encryption(char* key, unsigned char* in, unsigned char* out, int length)
 
 void main(void)
 {
+	FILE* KEYfile = fopen(KEY_PATH, "r");
+	if (KEYfile == NULL)
+	{
+		printf("ERROR: unable to open file with message.\n");
+		return 0;
+	}
+	fseek(KEYfile, 0L, SEEK_END);
+	int KEYSize = ftell(KEYfile);
+	fseek(KEYfile, 0L, SEEK_SET);
+	int KEY2Size = KEYSize * 8;
+	unsigned int* key10 = (unsigned int*)malloc(sizeof(unsigned int) * KEYSize);
+	for (int i = 0; i < KEYSize; i++) key10[i] = fgetc(KEYfile);
+	unsigned int* key2 = (unsigned int*)malloc(sizeof(unsigned int) * KEY2Size);
+
+	//dec2bin_array(key10, key2, KEYSize, KEY2Size);
+
 	int sw; //switch
 	printf("Choose crypting mode:\nEnter 1 for .bmp\nEnter 2 for .txt\n");
 	scanf("%d", &sw); 
@@ -87,9 +103,9 @@ void main(void)
 		
 		dec2bin_array(in10, in2, picSize, pic2Size);
 
-		
+		RC4encryption(key10, in2, out2, pic2Size, KEYSize);
 
-		bin2dec_array(out10, in2, picSize, pic2Size);
+		bin2dec_array(out10, out2, picSize, pic2Size);
 
 		fseek(destFile, 0x36, SEEK_SET);
 		for (int i = 0; i < picSize; i++) 
@@ -129,22 +145,6 @@ void main(void)
 		for (int i = 0; i < fileSize; i++) in10[i] = fgetc(textINfile);
 		fclose(textINfile);
 		dec2bin_array(in10, in2, fileSize, file2Size);
-
-		FILE* KEYfile = fopen(KEY_PATH, "r");
-		if (textINfile == NULL)
-		{
-			printf("ERROR: unable to open file with message.\n");
-			return 0;
-		}
-		fseek(KEYfile, 0L, SEEK_END);
-		int KEYSize = ftell(KEYfile);
-		fseek(KEYfile, 0L, SEEK_SET);
-		int KEY2Size = KEYSize * 8;
-		unsigned int* key10 = (unsigned int*)malloc(sizeof(unsigned int) * KEYSize);
-		for (int i = 0; i < KEYSize; i++) key10[i] = fgetc(KEYfile);
-		unsigned int* key2 = (unsigned int*)malloc(sizeof(unsigned int) * KEY2Size);
-
-		dec2bin_array(key10, key2, KEYSize, KEY2Size);
 
 		RC4encryption(key2, in2, out2, file2Size, KEY2Size); //ENCRYPTION with RC4 algorithm
 
@@ -189,7 +189,7 @@ void PRGA(unsigned int* S, int len, unsigned int* ext)
 		return NULL;
 
 	int i = 0; int j = 0;
-	for (int k = 0; k < len/8; k++)
+	for (int k = 0; k < len; k++)
 	{
 		i = (i + 1) % 256;
 		j = (j + S[i]) % 256;
