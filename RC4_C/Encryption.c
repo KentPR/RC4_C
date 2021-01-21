@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#define SRC_FILE_PATH "2000x2000.bmp"
+#define SRC_FILE_PATH "1000x1000c.bmp"
 #define DEST_FILE_PATH "result.bmp"
 #define RESULT_TXT "result.txt"
 #define TEXT_IN_PATH "tin.txt"
@@ -124,7 +124,7 @@ void main(void)
 	else
 	{
 		//Открыть файл-сообщение
-		FILE* textINfile = fopen(TEXT_IN_PATH, "r");
+		FILE* textINfile = fopen(TEXT_IN_PATH, "rb");
 		if (textINfile == NULL) 
 		{
 			printf("ERROR: unable to open file with message.\n");
@@ -142,21 +142,26 @@ void main(void)
 		in2 = (unsigned int*)malloc(file2Size * sizeof(unsigned int));
 		out2 = (unsigned int*)malloc(file2Size * sizeof(unsigned int));
 		for (int i = 0; i < file2Size; i++) in2[i] = 0;
-		for (int i = 0; i < fileSize; i++) in10[i] = fgetc(textINfile);
+		for (int i = 0; i < fileSize; i++) out10[i] = 0;
+		for (int i = 0; i < fileSize; i++) 
+		{ 
+			in10[i] = fgetc(textINfile); 
+			printf("%c", in10[i]); 
+		}
 		fclose(textINfile);
 		dec2bin_array(in10, in2, fileSize, file2Size);
 
-		RC4encryption(key2, in2, out2, file2Size, KEY2Size); //ENCRYPTION with RC4 algorithm
-
-		for (int i = 0; i < fileSize; i++) out10[i]=0;
+		RC4encryption(key10, in2, out2, file2Size, KEYSize); //ENCRYPTION with RC4 algorithm
+		
 		bin2dec_array(out10, out2, fileSize, file2Size);
 		
-		FILE* textOUTfile = fopen(TEXT_OUT_PATH, "w");
-		if (textINfile == NULL) 
+		FILE* textOUTfile = fopen(TEXT_OUT_PATH, "wb+");
+		if (textOUTfile == NULL)
 		{
 			printf("ERROR: unable to create result file.\n");
 			return 0;
 		}
+		fseek(textOUTfile, 0L, SEEK_SET);
 		for (int i = 0; i < fileSize; i++) 
 			putc(out10[i], textOUTfile);
 		fclose(textOUTfile);
